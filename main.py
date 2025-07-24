@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from auth import hash_password, verify_password, create_access_token
@@ -97,4 +98,10 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
+    import os
+import uvicorn
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
