@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime,Identity
 from sqlalchemy import Column, Integer, String, DateTime
 from database import Base
-import datetime
+from datetime import datetime
+
 #class UserDB(Base):
 #    __tablename__ = "users"
 #    email = Column(String, primary_key=True, index=True)
