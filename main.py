@@ -28,7 +28,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not set in environment variables")
 #keys = os.environ.get("key")
-keys = "b'6a2xU1iwZfoVs5n9vXeZsEZ5etySe6XSx0Jvd2uEh5k='"
+keys = b'6a2xU1iwZfoVs5n9vXeZsEZ5etySe6XSx0Jvd2uEh5k='
 if not keys:
     raise RuntimeError("key is not set in environment variables")
 fernet = Fernet(keys)
