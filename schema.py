@@ -1,7 +1,10 @@
 # schemas.py
 from pydantic import BaseModel, EmailStr
 from models import Base
+from typing import List
 
+class AuthorizeUsersRequest(BaseModel):
+    emails: List[EmailStr]
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
