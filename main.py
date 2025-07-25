@@ -86,12 +86,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(UserDB).filter(UserDB.email == login_data.email).first()
     if not user:
-        raise HTTPException(status_code=400, detail="Email not found")
+        raise HTTPException(status_code=400, detail="Email不正確")
+    if user.status != 0:
+        raise HTTPException(status_code=403, detail="請等待管理者授權")
     if not pwd_context.verify(login_data.password, user.pwd):
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=400, detail="密碼不正確")
     #return {"message": "Login successful", "user_id": user.account_id}
     access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"登入成功：access_token": access_token, "token_type": "bearer"}
 
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
