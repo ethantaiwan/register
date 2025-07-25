@@ -14,6 +14,10 @@ from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAc
 from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
+from cryptography.fernet import Fernet
+#from dotenv import load_dotenv
+import os
+
 
 # ======== 加密與JWT設定 ==========
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
@@ -23,6 +27,11 @@ if not SECRET_KEY:
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not set in environment variables")
+load_dotenv()
+keys = Fernet(os.environ["key"])
+if not keys:
+    raise RuntimeError("key is not set in environment variables")
+fernet = Fernet(keys)
 #SECRET_KEY =os.env['token']
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -40,7 +49,10 @@ def get_db():
         db.close()
 def hash_password(password: str):
     return pwd_context.hash(password)
-
+def encrypt_pwd(pwd: str) -> str:
+    return fernet.encrypt(pwd.encode()).decode()
+def decrypt_pwd(enc_pwd: str) -> str:
+    return fernet.decrypt(enc_pwd.encode()).decode()    
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -111,10 +123,10 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     existing = db.query(GameAccountDB).filter_by(username=gamedata.username).first()
     if existing:
         raise HTTPException(status_code=400, detail="此帳號已存在")
-    hashed_password = get_password_hash(gamedata.password)
+    encrypt_password = encrypt_pwd(gamedata.password)
     new_account = GameAccountDB(
         username=gamedata.username,
-        pwd=hashed_password,
+        pwd=encrypt_password,
         provider_id=gamedata.provider_id
     )
     db.add(new_account)
