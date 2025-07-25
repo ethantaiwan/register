@@ -25,3 +25,9 @@ class UserDB(Base):
     pwd = Column(String(128))  # hashed password 寫進這欄位
     status = Column(SmallInteger, default=9)
     create_at = Column(DateTime, default=datetime.utcnow)
+class GameAccountDB(Base):
+    __tablename__ = "accounts"
+    account_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String(100), nullable=False)
+    pwd = Column(String(128), nullable=False)
+    provider_id = Column(Integer, nullable=False)  # 可依需求設 ForeignKey
