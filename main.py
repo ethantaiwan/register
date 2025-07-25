@@ -9,8 +9,8 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 
-from models import UserDB
-from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest
+from models import UserDB, GameAccountDB
+from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest
 from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
