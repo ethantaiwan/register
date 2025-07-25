@@ -27,8 +27,7 @@ if not SECRET_KEY:
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not set in environment variables")
-load_dotenv()
-keys = Fernet(os.environ["key"])
+keys = Fernet(os.environ.get("key"))
 if not keys:
     raise RuntimeError("key is not set in environment variables")
 fernet = Fernet(keys)
