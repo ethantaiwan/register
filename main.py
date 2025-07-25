@@ -115,7 +115,7 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     new_account = GameAccountDB(
         username=data.username,
         pwd=hashed_password,
-        provider_id=data.provider_id
+        provider_id=gamedata.provider_id
     )
     db.add(new_account)
     db.commit()
