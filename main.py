@@ -102,7 +102,7 @@ def authorize_users(request: AuthorizeUsersRequest, db: Session = Depends(get_db
         .update({UserDB.status: 0}, synchronize_session=False)
     )
     if not updated_count:
-        raise HTTPException(status_code=404, detail="每有找到可授權的使用者帳號")
+        raise HTTPException(status_code=404, detail="沒有找到可授權的使用者帳號")
     db.commit()
     return {"msg": f"{updated_count} user(s) authorized"}
 
