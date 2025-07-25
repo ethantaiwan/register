@@ -105,7 +105,22 @@ def authorize_users(request: AuthorizeUsersRequest, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="沒有找到可授權的使用者帳號")
     db.commit()
     return {"msg": f"{updated_count} user(s) authorized"}
-
+@app.post("/add-gameaccount")
+def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
+    # 檢查帳號是否已存在
+    existing = db.query(GameAccountDB).filter_by(username=gamedata.username).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="此帳號已存在")
+    hashed_password = get_password_hash(gamedata.password)
+    new_account = GameAccountDB(
+        username=data.username,
+        pwd=hashed_password,
+        provider_id=data.provider_id
+    )
+    db.add(new_account)
+    db.commit()
+    db.refresh(new_account)
+    return {"msg": "帳號新增成功！", "account": new_account.username}
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
