@@ -113,7 +113,7 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="此帳號已存在")
     hashed_password = get_password_hash(gamedata.password)
     new_account = GameAccountDB(
-        username=data.username,
+        username=gamedata.username,
         pwd=hashed_password,
         provider_id=gamedata.provider_id
     )
