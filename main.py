@@ -27,9 +27,10 @@ if not SECRET_KEY:
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL not set in environment variables")
-fernet = Fernet(os.environ.get("key"))
+keys = os.environ.get("key")
 if not keys:
     raise RuntimeError("key is not set in environment variables")
+fernet = Fernet(keys)
 #SECRET_KEY =os.env['token']
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
