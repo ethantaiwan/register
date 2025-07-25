@@ -12,7 +12,10 @@ class UserCreate(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
-
+class AddAccountRequest(BaseModel):
+    username: str
+    password: str
+    provider_id: int
 # models.py
 #class UserDB(Base):
 #    __tablename__ = "main_accounts"
