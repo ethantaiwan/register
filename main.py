@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import os
 
 from models import UserDB
-from schema import UserCreate, LoginRequest, Token
+from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest
 from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
@@ -94,6 +94,17 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     return {"message": "登入成功", "user_id": user.email.split("@")[0]}
     #access_token = create_access_token(data={"sub": user.email})
     #return {"登入成功：access_token": access_token, "token_type": "bearer"}
+@app.post("/authorize-users")
+def authorize_users(request: AuthorizeUsersRequest, db: Session = Depends(get_db)):
+    updated_count = (
+        db.query(UserDB)
+        .filter(UserDB.email.in_(request.emails), UserDB.status == 9)
+        .update({UserDB.status: 0}, synchronize_session=False)
+    )
+    if not updated_count:
+        raise HTTPException(status_code=404, detail="每有找到可授權的使用者帳號")
+    db.commit()
+    return {"msg": f"{updated_count} user(s) authorized"}
 
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
