@@ -91,7 +91,7 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=403, detail="請等待管理者授權")
     if not pwd_context.verify(login_data.password, user.pwd):
         raise HTTPException(status_code=400, detail="密碼不正確")
-    return {"message": "登入成功", "user_id": user.account_id}
+    return {"message": "登入成功", "user_id": user.email.split("@")[0]}
     #access_token = create_access_token(data={"sub": user.email})
     #return {"登入成功：access_token": access_token, "token_type": "bearer"}
 
