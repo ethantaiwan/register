@@ -11,8 +11,9 @@ import os
 
 from models import UserDB
 from schema import UserCreate, LoginRequest, Token
-from database import SessionLocal
-
+from database import SessionLocal, Base
+from passlib.context import CryptContext
+from auth import get_password_hash
 
 # ======== 加密與JWT設定 ==========
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
@@ -37,8 +38,8 @@ def get_db():
         yield db
     finally:
         db.close()
-#def hash_password(password: str):
-#    return pwd_context.hash(password)
+def hash_password(password: str):
+    return pwd_context.hash(password)
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
