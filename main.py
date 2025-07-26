@@ -17,6 +17,7 @@ from auth import get_password_hash
 from cryptography.fernet import Fernet
 #from dotenv import load_dotenv
 import os
+from fastapi import APIRouter, Depends, HTTPException
 
 
 # ======== 加密與JWT設定 ==========
@@ -133,12 +134,6 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_account)
     return {"msg": "帳號新增成功！", "account": new_account.username}
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from models import GameAccountDB, GameUserMappingDB
-from database import get_db
-
-router = APIRouter()
 
 @router.post("/update-mapping-flags")
 def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
