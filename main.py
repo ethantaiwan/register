@@ -18,6 +18,8 @@ from cryptography.fernet import Fernet
 #from dotenv import load_dotenv
 import os
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
+
 
 
 # ======== 加密與JWT設定 ==========
@@ -78,6 +80,8 @@ class Token(BaseModel):
 
 #engine = create_engine(DATABASE_URL)
 #SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+#router = APIRouter() #router 使用
+
 @app.get("/")
 def read_root():
     return {"msg": "FastAPI is running"}
@@ -135,7 +139,7 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     db.refresh(new_account)
     return {"msg": "帳號新增成功！", "account": new_account.username}
 
-@router.post("/update-mapping-flags")
+@app.post("/update-mapping-flags")
 def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
     """
     data 例子：
@@ -153,6 +157,7 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         ]
     }
     """
+    router = APIRouter()
     provider_name = data.get("provider")
     mappings = data.get("mappings", [])
 
