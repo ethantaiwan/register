@@ -9,7 +9,7 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 
-from models import UserDB, GameAccountDB, GameUserMappingDB
+from models import UserDB, GameAccountDB, GameUserMappingDB, Provider
 from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest
 from database import SessionLocal, Base
 from passlib.context import CryptContext
@@ -157,7 +157,7 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         ]
     }
     """
-    router = APIRouter()
+    #router = APIRouter()
     provider_name = data.get("provider")
     mappings = data.get("mappings", [])
 
