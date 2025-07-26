@@ -31,3 +31,16 @@ class GameAccountDB(Base):
     username = Column(String(100), nullable=False)
     pwd = Column(String(128), nullable=False)
     provider_id = Column(Integer, nullable=False)  # 可依需求設 ForeignKey
+class Provider(Base):
+    __tablename__ = "providers"
+    
+    provider_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(8) )
+class GameUserMappingDB(Base):
+    __tablename__ = "games"
+    
+    game_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.account_id"))
+    providers_id = Column(Integer, ForeignKey("provider.provider_id"))
+    flag = Column(Boolean, default=False)
+
