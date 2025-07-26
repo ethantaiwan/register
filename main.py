@@ -173,7 +173,7 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         selected_games = item["games"]
 
         # 查詢帳號
-        account = db.query(GameAccountDB).filter_by(username=username).first()
+        account = db.query(GameAccountDB).filter_by(username=username,provider_id=provider.provider_id).first()
         if not account:
             continue
 
