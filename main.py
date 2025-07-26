@@ -158,7 +158,10 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         ]
     }
     """
+    provider_name = data.get("provider")
     mappings = data.get("mappings", [])
+
+    # 取得 provider_id
     provider = db.query(Provider).filter_by(name=provider_name).first()
     if not provider:
         raise HTTPException(status_code=400, detail="該平台不存在")
@@ -169,22 +172,20 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         username = item["username"]
         selected_games = item["games"]
 
-        # 找 account_id
+        # 查詢帳號
         account = db.query(GameAccountDB).filter_by(username=username).first()
-
         if not account:
             continue
 
-        # 查詢該帳號在該 provider 下的所有對應
-        #all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.id).all()
-        all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.account_id, providers_id=provider_id).all()
+        # 查詢該帳號在該平台的所有遊戲紀錄
+        all_rows = db.query(GameUserMappingDB).filter_by(
+            account_id=account.account_id,
+            providers_id=provider_id
+        ).all()
 
         for row in all_rows:
-            # 判斷這筆遊戲名稱是否在選取中
-            if row.game_name in selected_games:
-                row.flag = True
-            else:
-                row.flag = False
+            row.flag = row.game_name in selected_games
+
 
     db.commit()
     return {"msg": "flag 更新完成"}
