@@ -180,7 +180,7 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         # 查詢該帳號在該平台的所有遊戲紀錄
         all_rows = db.query(GameUserMappingDB).filter_by(
             account_id=account.account_id,
-            providers_id=provider_id
+            provider_id=provider_id
         ).all()
 
         for row in all_rows:
