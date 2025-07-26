@@ -41,6 +41,6 @@ class GameUserMappingDB(Base):
     
     game_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     account_id = Column(Integer, ForeignKey("accounts.account_id"))
-    providers_id = Column(Integer, ForeignKey("provider.provider_id"))
+    providers_id = Column(Integer, ForeignKey("providers.provider_id"))
     flag = Column(Boolean, default=False)
 
