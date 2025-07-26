@@ -42,7 +42,7 @@ class GameUserMappingDB(Base):
     __tablename__ = "games"
     game_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     account_id = Column(Integer, ForeignKey("accounts.account_id"))
-    providers_id = Column(Integer, ForeignKey("providers.provider_id"))
+    provider_id = Column(Integer, ForeignKey("providers.provider_id"))
     game_name = Column(String(8))  # 視你 DB schema 決定長度
     flag = Column(Boolean, default=False)
 
