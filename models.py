@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, SmallInteger, DateTime,Identity
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, Identity
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
+
 from database import Base
 from datetime import datetime
 from sqlalchemy import ForeignKey
