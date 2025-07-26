@@ -9,7 +9,7 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 
-from models import UserDB, GameAccountDB
+from models import UserDB, GameAccountDB, GameUserMappingDB
 from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest
 from database import SessionLocal, Base
 from passlib.context import CryptContext
@@ -133,6 +133,56 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_account)
     return {"msg": "帳號新增成功！", "account": new_account.username}
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from models import GameAccountDB, GameUserMappingDB
+from database import get_db
+
+router = APIRouter()
+
+@router.post("/update-mapping-flags")
+def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
+    """
+    data 例子：
+    {
+        "provider": "IBM",
+        "mappings": [
+            {
+                "username": "Ace",
+                "games": ["539", "天天樂"]
+            },
+            {
+                "username": "King",
+                "games": ["六合"]
+            }
+        ]
+    }
+    """
+    provider_name = data.get("provider")
+    mappings = data.get("mappings", [])
+
+    for item in mappings:
+        username = item["username"]
+        selected_games = item["games"]
+
+        # 找 account_id
+        account = db.query(GameAccountDB).filter_by(username=username).first()
+        if not account:
+            continue
+
+        # 查詢該帳號在該 provider 下的所有對應
+        all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.id).all()
+
+        for row in all_rows:
+            # 判斷這筆遊戲名稱是否在選取中
+            if row.game_name in selected_games:
+                row.flag = True
+            else:
+                row.flag = False
+
+    db.commit()
+    return {"msg": "flag 更新完成"}
+
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
