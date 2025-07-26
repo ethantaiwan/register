@@ -28,3 +28,11 @@ class AddAccountRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+class ElapseSetting(BaseModel):
+    username: str
+    seconds: int
+
+class GameTimeSettingRequest(BaseModel):
+    provider_name: str
+    game_name: str  # or "全部"
+    elapse_settings: List[ElapseSetting]
