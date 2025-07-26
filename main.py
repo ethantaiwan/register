@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import os
 
 from models import UserDB, GameAccountDB, GameUserMappingDB, Provider
-from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest
+from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest, GameTimeSettingRequest
 from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
@@ -19,8 +19,6 @@ from cryptography.fernet import Fernet
 import os
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import APIRouter, Depends
-
-
 
 # ======== 加密與JWT設定 ==========
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
@@ -189,6 +187,29 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
 
     db.commit()
     return {"msg": "flag 更新完成"}
+
+@app.post("/set-game-elapse")
+def set_game_elapse(data: GameTimeSettingRequest, db: Session = Depends(get_db)):
+    provider = db.query(Provider).filter_by(name=data.provider_name).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="平台不存在")
+
+    for setting in data.elapse_settings:
+        account = db.query(GameAccountDB).filter_by(username=setting.username, provider_id=provider.provider_id).first()
+        if not account:
+            raise HTTPException(status_code=400, detail=f"帳號 {username} 不存在於 provider {provider.name}")
+
+        query = db.query(GameUserMappingDB).filter_by(account_id=account.account_id, provider_id=provider.provider_id)
+
+        if data.game_name != "全部":
+            query = query.filter_by(game_name=data.game_name)
+
+        records = query.all()
+        for record in records:
+            record.game_elapse = setting.seconds
+
+    db.commit()
+    return {"message": "更新成功"}
 
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
