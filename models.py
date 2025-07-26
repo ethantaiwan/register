@@ -44,5 +44,6 @@ class GameUserMappingDB(Base):
     account_id = Column(Integer, ForeignKey("accounts.account_id"))
     provider_id = Column(Integer, ForeignKey("providers.provider_id"))
     game_name = Column(String(8))  # 視你 DB schema 決定長度
+    game_elapse = Column(SmallInteger)  
     flag = Column(Boolean, default=False)
 
