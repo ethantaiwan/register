@@ -158,8 +158,12 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         ]
     }
     """
-    provider_name = data.get("provider")
     mappings = data.get("mappings", [])
+    provider = db.query(Provider).filter_by(name=provider_name).first()
+    if not provider:
+        raise HTTPException(status_code=400, detail="該平台不存在")
+
+    provider_id = provider.provider_id
 
     for item in mappings:
         username = item["username"]
@@ -167,11 +171,13 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
 
         # 找 account_id
         account = db.query(GameAccountDB).filter_by(username=username).first()
+
         if not account:
             continue
 
         # 查詢該帳號在該 provider 下的所有對應
-        all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.id).all()
+        #all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.id).all()
+        all_rows = db.query(GameUserMappingDB).filter_by(account_id=account.account_id, providers_id=provider_id).all()
 
         for row in all_rows:
             # 判斷這筆遊戲名稱是否在選取中
