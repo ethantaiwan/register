@@ -175,7 +175,7 @@ def update_mapping_flags(data: dict, db: Session = Depends(get_db)):
         # 查詢帳號
         account = db.query(GameAccountDB).filter_by(username=username,provider_id=provider.provider_id).first()
         if not account:
-            continue
+            raise HTTPException(status_code=400, detail=f"帳號 {username} 不存在於 provider {provider.name}")
 
         # 查詢該帳號在該平台的所有遊戲紀錄
         all_rows = db.query(GameUserMappingDB).filter_by(
