@@ -9,8 +9,8 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 
-from models import UserDB, GameAccountDB, GameUserMappingDB, Provider
-from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest, GameTimeSettingRequest
+from models import UserDB, GameAccountDB, GameUserMappingDB, Provider, Wager, WagerItem
+from schema import UserCreate, LoginRequest, Token, AuthorizeUsersRequest, AddAccountRequest, GameTimeSettingRequest, WagerInput
 from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
@@ -265,3 +265,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
 
+# 自動參數 帳號,加密密碼,平台,遊戲,球號,bet_type,金額
+    #,判斷哪個平台 呼叫不同的code 判斷 哪個遊戲 球數會不同, 密碼要在執行時才解開
