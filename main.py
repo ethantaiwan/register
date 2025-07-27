@@ -201,7 +201,7 @@ def set_game_elapse(data: GameTimeSettingRequest, db: Session = Depends(get_db))
 
         query = db.query(GameUserMappingDB).filter_by(account_id=account.account_id, provider_id=provider.provider_id)
 
-        if data.game_name != "全部":
+        if data.game_name != "全":
             query = query.filter_by(game_name=data.game_name)
 
         records = query.all()
