@@ -2,6 +2,7 @@
 from pydantic import BaseModel, EmailStr
 from models import Base
 from typing import List
+from datetime import datetime
 
 class AuthorizeUsersRequest(BaseModel):
     emails: List[EmailStr]
@@ -36,3 +37,15 @@ class GameTimeSettingRequest(BaseModel):
     provider_name: str
     game_name: str  # or "全部"
     elapse_settings: List[ElapseSetting]
+    
+class WagerInput(BaseModel):
+    provider_name: str
+    game_name: str
+    account_username: str
+    bet_amount: int
+    items: List[WagerItemInput]
+
+class WagerItemInput(BaseModel):
+    ball: str  # e.g. "0102030405"
+
+
