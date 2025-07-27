@@ -38,6 +38,8 @@ class GameTimeSettingRequest(BaseModel):
     game_name: str  # or "全部"
     elapse_settings: List[ElapseSetting]
     
+class WagerItemInput(BaseModel):
+    ball: str  # e.g. "0102030405"
 class WagerInput(BaseModel):
     provider_name: str
     game_name: str
@@ -45,7 +47,6 @@ class WagerInput(BaseModel):
     bet_amount: int
     items: List[WagerItemInput]
 
-class WagerItemInput(BaseModel):
-    ball: str  # e.g. "0102030405"
+
 
 
