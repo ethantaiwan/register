@@ -50,7 +50,7 @@ class GameUserMappingDB(Base):
 # models.py
 class Wager(Base):
     __tablename__ = "wager"
-    w_id = Column(Integer, primary_key=True,Integer,index=True, autoincrement=True)
+    w_id = Column(Integer, primary_key=True,index=True, autoincrement=True)
     w_date_time = Column(DateTime)
     bet_type = Column(String(50))
     p_id = Column(SmallInteger,ForeignKey("providers.provider_id"))
