@@ -210,6 +210,50 @@ def set_game_elapse(data: GameTimeSettingRequest, db: Session = Depends(get_db))
 
     db.commit()
     return {"message": "更新成功"}
+from datetime import datetime
+
+@app.post("/submit-wager")
+def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
+    provider = db.query(Provider).filter_by(name=payload.provider_name).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="遊戲平台錯誤")
+
+    account = db.query(GameAccountDB).filter_by(username=payload.account_username, provider_id=provider.provider_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="找不到該帳號")
+
+    mapping = db.query(GameUserMappingDB).filter_by(account_id=account.account_id, provider_id=provider.provider_id, game_name=payload.game_name).first()
+    if not mapping:
+        raise HTTPException(status_code=404, detail="遊戲名稱不正確")
+
+    now = datetime.now()
+
+    new_wager = Wager(
+        w_date_time=now,
+        bet_type="234",
+        p_id=provider.provider_id,
+        game_id=mapping.game_id,
+        account_id=account.account_id,
+        bet_flag=False,
+    )
+    db.add(new_wager)
+    db.flush()  # 拿 w_id
+
+    for item in payload.items:
+        wager_item = WagerItem(
+            w_id=new_wager.w_id,
+            e_date_time=now,
+            ball=item.ball,
+            status=999,
+            bet_amount=payload.bet_amount,
+            win_loss=None,
+            win_amount=None,
+            deduct_amount=None,
+        )
+        db.add(wager_item)
+
+    db.commit()
+    return {"status": "success", "wager_id": new_wager.w_id}
 
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
