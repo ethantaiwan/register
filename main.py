@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from fastapi.security import OAuth2PasswordBearer
 
 from pydantic import BaseModel, EmailStr
@@ -16,9 +16,7 @@ from passlib.context import CryptContext
 from auth import get_password_hash
 from cryptography.fernet import Fernet
 #from dotenv import load_dotenv
-import os
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi import APIRouter, Depends
+from fastapi.middleware.cors import CORSMiddleware
 
 # ======== 加密與JWT設定 ==========
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
