@@ -15,7 +15,6 @@ from database import SessionLocal, Base
 from passlib.context import CryptContext
 from auth import get_password_hash
 from cryptography.fernet import Fernet
-#from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 
 # ======== 加密與JWT設定 ==========
@@ -37,13 +36,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
-#app.add_middleware(
-#    CORSMiddleware,
-#    allow_origins=["https://victory-umey.onrender.com"],  # 或指定你的前端網址
-#    allow_credentials=True,
-#    allow_methods=["*"],
-#    allow_headers=["*"],
-#)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://victory-umey.onrender.com"],  # 或指定你的前端網址
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 # 建立 DB session
