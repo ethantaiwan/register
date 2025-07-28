@@ -115,7 +115,11 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     if not pwd_context.verify(login_data.password, user.pwd):
         raise HTTPException(status_code=400, detail="密碼不正確")
     access_token = create_access_token(data={"sub": user.email})
-    return {"登入成功：access_token": access_token, "token_type": "bearer", "user_id": user.email.split("@")[0]}
+    return {
+    "access_token": access_token,
+    "token_type": "bearer",
+    "user_id": user.email.split("@")[0]
+    }
     #access_token = create_access_token(data={"sub": user.email})
     #return {"登入成功：access_token": access_token, "token_type": "bearer"}
 @app.post("/authorize-users")
