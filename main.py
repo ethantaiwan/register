@@ -62,7 +62,15 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        return username
+    except JWTError:
+        raise credentials_exception
 # ======== 資料模型 ==========
 class User(BaseModel):
     email: EmailStr
@@ -106,6 +114,7 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=403, detail="請等待管理者授權")
     if not pwd_context.verify(login_data.password, user.pwd):
         raise HTTPException(status_code=400, detail="密碼不正確")
+    access_token = create_access_token(data={"sub": user.email)
     return {"登入成功：access_token": access_token, "token_type": "bearer", "user_id": user.email.split("@")[0]}
     #access_token = create_access_token(data={"sub": user.email})
     #return {"登入成功：access_token": access_token, "token_type": "bearer"}
