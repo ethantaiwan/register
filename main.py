@@ -274,19 +274,19 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
 # routers/game_accounts.py
 
 @app.get("/api/get-usernames")
-#def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: Session = Depends(get_db)):
-#    game = db.query(GameUserMappingDB).filter(
-#        GameUserMappingDB.provider_id == provider_id,
-#        GameUserMappingDB.game_name == game_name
-#    ).first()
+def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: Session = Depends(get_db)):
+    game = db.query(GameUserMappingDB).filter(
+        GameUserMappingDB.provider_id == provider_id,
+        GameUserMappingDB.game_name == game_name
+    ).first()
 
- #   if not game:
-  #      raise HTTPException(status_code=404, detail="Game not found")
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
 
-   # usernames = db.query(GameAccountDB.username).filter(GameAccountDB.provider_id == game.provider_id).all()
+    usernames = db.query(GameAccountDB.username).filter(GameAccountDB.provider_id == game.provider_id).all()
     #usernames = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
     #GameAccountDB.provider_id == game.provider_id)
-    #return {"usernames": [ {"username": [u.username for u in usernames]}
+    return {"usernames": [ {"username": [u.username for u in usernames]}}
                               
    # return {
    #     "usernames": [
@@ -294,21 +294,21 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
    #         for u in usernames
     #    ]
                           #}
-def get_username_time(provider_id: int, game_name: str, db: Session = Depends(get_db)):
-    results = db.query(
-        GameAccountDB.username,
-        GameUserMappingDB.game_elapse
-    ).join(GameUserMappingDB, GameUserMappingDB.account_id == GameAccountDB.id
-    ).join(Game, GameUserMappingDB.game_id == Game.id
-    ).filter(
-        Game.provider_id == provider_id,
-        Game.game_name == game_name
-    ).all()
-
-    return [
-        {"username": username, "seconds": elapse}
-        for username, elapse in results
-    ]
+#def get_username_time(provider_id: int, game_name: str, db: Session = Depends(get_db)):
+#    results = db.query(
+#        GameAccountDB.username,
+#        GameUserMappingDB.game_elapse
+#    ).join(GameUserMappingDB, GameUserMappingDB.account_id == GameAccountDB.id
+#    ).join(Game, GameUserMappingDB.game_id == Game.id
+#    ).filter(
+#        Game.provider_id == provider_id,
+#        Game.game_name == game_name
+#    ).all()
+#
+#    return [
+#        {"username": username, "seconds": elapse}
+#        for username, elapse in results
+#    ]
 
 @app.get("/api/get-username-time")
 def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
