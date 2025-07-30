@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, APIRouter
+from fastapi import FastAPI, HTTPException, Depends, APIRouter, Query
 from fastapi.security import OAuth2PasswordBearer
 
 from pydantic import BaseModel, EmailStr
@@ -293,6 +293,13 @@ def get_usernames(
     usernames = db.query(GameAccountDB.username).filter(GameAccountDB.game_id == GameUserMappingDB.game_id).all()
 
     return {"usernames": [u.username for u in usernames]}
+def get_account_elapse_settings(db: Session, provider_id: int, game_name: str):
+    results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).join(GameAccountDB).filter(
+        GameAccountDB.provider_id == provider_id,
+        GameAccountDB.game_name == game_name
+    ).all()
+
+    return [{"username": username, "seconds": elapse} for username, elapse in results]
 
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
