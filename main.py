@@ -273,10 +273,6 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
     return {"status": "success", "wager_id": new_wager.w_id}
 # routers/game_accounts.py
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from database import get_db
-from models import Game, GameAccount
 
 router = APIRouter()
 
@@ -286,7 +282,7 @@ def get_usernames(
     game_name: str = Query(...),
     db: Session = Depends(get_db)
 ):
-    game = db.query(Game).filter(
+    game = db.query(GameUserMappingDB).filter(
         Game.provider_id == provider_id,
         Game.game_name == game_name
     ).first()
@@ -294,7 +290,7 @@ def get_usernames(
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    usernames = db.query(GameAccount.username).filter(GameAccount.game_id == game.id).all()
+    usernames = db.query(GameAccountDB.username).filter(GameAccountDB.game_id == GameUserMappingDB.game_id).all()
 
     return {"usernames": [u.username for u in usernames]}
 
