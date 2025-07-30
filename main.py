@@ -287,7 +287,7 @@ def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: 
 
     return {"usernames": [u.username for u in usernames]}
 @app.get("/api/get-username-time")
-def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db):
+def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
     results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).join(GameAccountDB).filter(
         GameAccountDB.provider_id == provider_id,
         GameAccountDB.game_name == game_name
