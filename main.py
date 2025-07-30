@@ -272,7 +272,7 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "success", "wager_id": new_wager.w_id}
 
-@app.get("/api/get-usernames")
+@app.get("/get-usernames")
 def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: Session = Depends(get_db)):
     game = db.query(GameUserMappingDB).filter(
         GameUserMappingDB.provider_id == provider_id,
@@ -286,7 +286,7 @@ def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: 
 
     return {"usernames": [u.username for u in usernames]}
 
-@app.get("/api/get-username-time")
+@app.get("/get-username-time")
 def get_username_time(provider_id: int, game_name: str, db: Session = Depends(get_db)):
     results = db.query(
         GameAccountDB.username,
@@ -303,10 +303,6 @@ def get_username_time(provider_id: int, game_name: str, db: Session = Depends(ge
         {"username": username, "seconds": elapse}
         for username, elapse in results
     ]
-
-
-@app.get("/api/get-username-time")
-def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
 
 
 @app.get("/protected")
