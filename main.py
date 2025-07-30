@@ -284,9 +284,16 @@ def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: 
         raise HTTPException(status_code=404, detail="Game not found")
 
     #usernames = db.query(GameAccountDB.username,GameAccountDB.game_elapse).filter(GameAccountDB.provider_id == game.provider_id).all()
-    results = db.query(GameAccountDB.username,GameAccountDB.game_elapse).filter(GameAccountDB.provider_id == game.provider_id).all()
-
-    return {"usernames": [ {"username": u.username, "game_elapse": u.game_elapse} for u in results]}
+    usernames = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
+    GameAccountDB.provider_id == game.provider_id)
+    #return {"usernames": [ {"username": [u.username for u in usernames],"Time:":timesetting}
+                              
+    return {
+        "usernames": [
+            {"username": u.username, "game_elapse": u.game_elapse}
+            for u in usernames
+        ]
+    }
 @app.get("/api/get-username-time")
 def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
     results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
