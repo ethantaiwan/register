@@ -302,8 +302,7 @@ def get_account_elapse_settings(db: Session, provider_id: int, game_name: str):
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
-    import os
-import uvicorn
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
