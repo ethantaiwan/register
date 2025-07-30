@@ -292,17 +292,19 @@ def get_username_time(provider_id: int, game_name: str, db: Session = Depends(ge
     results = db.query(
         GameAccountDB.username,
         GameUserMappingDB.game_elapse
-    ).join(GameUserMappingDB, GameUserMappingDB.account_id == GameAccountDB.id
-    ).join(Game, GameUserMappingDB.game_id == Game.id
+    ).join(
+        GameUserMappingDB,
+        GameUserMappingDB.account_id == GameAccountDB.account_id
     ).filter(
-        Game.provider_id == provider_id,
-        Game.game_name == game_name
+        GameUserMappingDB.provider_id == provider_id,
+        GameUserMappingDB.game_name == game_name
     ).all()
 
     return [
         {"username": username, "seconds": elapse}
         for username, elapse in results
     ]
+
 
 @app.get("/api/get-username-time")
 def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
