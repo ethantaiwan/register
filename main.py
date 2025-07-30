@@ -283,10 +283,10 @@ def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: 
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    #usernames = db.query(GameAccountDB.username,GameAccountDB.game_elapse).filter(GameAccountDB.provider_id == game.provider_id).all()
-    usernames = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
-    GameAccountDB.provider_id == game.provider_id)
-    #return {"usernames": [ {"username": [u.username for u in usernames],"Time:":timesetting}
+    usernames = db.query(GameAccountDB.username).filter(GameAccountDB.provider_id == game.provider_id).all()
+    #usernames = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
+    #GameAccountDB.provider_id == game.provider_id)
+    return {"usernames": [ {"username": [u.username for u in usernames],"Time:":timesetting}
                               
     return {
         "usernames": [
