@@ -274,11 +274,7 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
 # routers/game_accounts.py
 
 @app.get("/api/get-usernames")
-def get_usernames(
-    provider_id: int = Query(...),
-    game_name: str = Query(...),
-    db: Session = Depends(get_db)
-):
+def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: Session = Depends(get_db)):
     game = db.query(GameUserMappingDB).filter(
         Game.provider_id == provider_id,
         Game.game_name == game_name
@@ -291,7 +287,7 @@ def get_usernames(
 
     return {"usernames": [u.username for u in usernames]}
 @app.get("/api/get-username-time")
-def get_account_elapse_settings(db: Session, provider_id: int, game_name: str):
+def get_account_elapse_settings(db: Session = Depends(get_db), provider_id: int, game_name: str):
     results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).join(GameAccountDB).filter(
         GameAccountDB.provider_id == provider_id,
         GameAccountDB.game_name == game_name
