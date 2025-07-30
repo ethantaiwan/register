@@ -293,6 +293,7 @@ def get_usernames(
     usernames = db.query(GameAccountDB.username).filter(GameAccountDB.game_id == GameUserMappingDB.game_id).all()
 
     return {"usernames": [u.username for u in usernames]}
+@router.get("/api/get-username-time")
 def get_account_elapse_settings(db: Session, provider_id: int, game_name: str):
     results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).join(GameAccountDB).filter(
         GameAccountDB.provider_id == provider_id,
