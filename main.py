@@ -276,8 +276,8 @@ def submit_wager(payload: WagerInput, db: Session = Depends(get_db)):
 @app.get("/api/get-usernames")
 def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: Session = Depends(get_db)):
     game = db.query(GameUserMappingDB).filter(
-        Game.provider_id == provider_id,
-        Game.game_name == game_name
+        GameUserMappingDB.provider_id == provider_id,
+        GameUserMappingDB.game_name == game_name
     ).first()
 
     if not game:
@@ -288,10 +288,14 @@ def get_usernames(provider_id: int = Query(...),game_name: str = Query(...),db: 
     return {"usernames": [u.username for u in usernames]}
 @app.get("/api/get-username-time")
 def get_ausername_time(provider_id: int,game_name: str,db: Session = Depends(get_db)):
-    results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).join(GameAccountDB).filter(
-        GameAccountDB.provider_id == provider_id,
-        GameAccountDB.game_name == game_name
+    results = db.query(GameAccountDB.username, GameAccountDB.game_elapse).filter(
+    GameAccountDB.provider_id == provider_id,
+    GameAccountDB.game_name == game_name
     ).all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="No matching game accounts found")
+
 
     return [{"username": username, "seconds": elapse} for username, elapse in results]
 
