@@ -18,6 +18,17 @@ from cryptography.fernet import Fernet
 from fastapi.middleware.cors import CORSMiddleware
 
 # ======== 加密與JWT設定 ==========
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # 或 ["*"] 但正式環境不建議
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
 SECRET_KEY = os.environ.get("token")
 if not SECRET_KEY:
