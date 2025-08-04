@@ -21,13 +21,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.middleware.cors import CORSMiddleware
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # 或 ["*"] 但正式環境不建議
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
 SECRET_KEY = os.environ.get("token")
@@ -49,7 +42,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://victory-umey.onrender.com"],  # 或指定你的前端網址
+    allow_origins=["https://victory-umey.onrender.com","http://localhost:8080"],  # 或指定你的前端網址
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
