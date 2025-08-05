@@ -169,7 +169,7 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
             game_name=game,
             game_elapse=5,
             game_type="234",  
-            flag=True
+            flag=true
         )
         db.add(mapping)
 
