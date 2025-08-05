@@ -171,8 +171,13 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
             game_type="234",  
             flag=True
         )
+    try:
         db.add(mapping)
-    db.commit()
+        db.commit()
+    except Exception as e:
+        print("⚠️ 發生錯誤：", e)
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="無法新增 mapping")
 
     return {"msg": "帳號新增成功！", "account": new_account.username}
 
