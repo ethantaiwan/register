@@ -316,7 +316,7 @@ def get_password(provider_id: int, username: str, db: Session = Depends(get_db))
         GameAccountDB.username == username
     ).first()
 
-    if not record:
+    if not results:
         raise HTTPException(status_code=404, detail="帳號不存在")
 
     return {"password": results.pwd}
