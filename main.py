@@ -167,8 +167,8 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
             account_id=new_account.account_id,
             provider_id=new_account.provider_id,
             game_name=game,
-            game_elapse=0,
-            flag=False
+            game_elapse=5,
+            flag=True
         )
         db.add(mapping)
 
