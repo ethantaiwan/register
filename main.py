@@ -163,18 +163,18 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     game_names = [g.game_name for g in db.query(GameUserMappingDB.game_name).distinct()]
 
     # 為該 provider_id 的所有遊戲新增對應 mapping
-    for game in game_names:
-        mapping = GameUserMappingDB(
-            account_id=new_account.account_id,
-            provider_id=new_account.provider_id,
-            game_name=game,
-            game_elapse=5,
-            game_type="234",  
-            flag=True
-        )
     try:
-        db.add(mapping)
-        db.commit()
+        for game in game_names:
+            mapping = GameUserMappingDB(
+                account_id=new_account.account_id,
+                provider_id=new_account.provider_id,
+                game_name=game,
+                game_elapse=5,
+                game_type="234",  
+                flag=True
+            )
+            db.add(mapping)  # ✅ 放進 for 迴圈
+        db.commit()  # ✅ 最後統一 commit 一次
     except Exception as e:
         print("⚠️ 發生錯誤：", e)
         traceback.print_exc()
