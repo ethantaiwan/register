@@ -307,9 +307,19 @@ def get_username_time(provider_id: int, game_name: str, db: Session = Depends(ge
         {"username": username, "seconds": elapse}
         for username, elapse in results
     ]
+
+
 @app.get("/get-password")
-def get_password(provider_id: int,username:str,db: Session = Depends(get_db)):
-    
+def get_password(provider_id: int, username: str, db: Session = Depends(get_db)):
+    results = db.query(GameAccountDB).filter(
+        GameAccountDB.provider_id == provider_id,
+        GameAccountDB.username == username
+    ).first()
+
+    if not record:
+        raise HTTPException(status_code=404, detail="帳號不存在")
+
+    return {"password": results.pwd}
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
