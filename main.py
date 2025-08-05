@@ -172,7 +172,6 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
             flag=True
         )
         db.add(mapping)
-
     db.commit()
 
     return {"msg": "帳號新增成功！", "account": new_account.username}
