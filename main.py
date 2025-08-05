@@ -156,6 +156,26 @@ def add_account(gamedata: AddAccountRequest, db: Session = Depends(get_db)):
     db.add(new_account)
     db.commit()
     db.refresh(new_account)
+
+    # 取得所有 provider_id
+    provider_ids = [p.provider_id for p in db.query(ProviderDB).all()]
+    
+    # 取得所有 game_name（假設從遊戲設定表中抓）
+    game_names = [g.game_name for g in db.query(GameNameTable).distinct()]
+
+    # 針對所有 provider_id 與 game_name 組合，新增 mapping
+    for pid in provider_ids:
+        for game in game_names:
+            mapping = GameUserMappingDB(
+                account_id=new_account.account_id,
+                provider_id=pid,
+                game_name=game,
+                game_elapse=0,     # 或預設值
+                flag=False         # 預設值
+            )
+            db.add(mapping)
+    db.commit()
+
     return {"msg": "帳號新增成功！", "account": new_account.username}
 
 @app.post("/update-mapping-flags")
