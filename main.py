@@ -307,8 +307,9 @@ def get_username_time(provider_id: int, game_name: str, db: Session = Depends(ge
         {"username": username, "seconds": elapse}
         for username, elapse in results
     ]
-
-
+@app.get("/get-password")
+def get_password(provider_id: int,username:str,db: Session = Depends(get_db)):
+    
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
