@@ -46,6 +46,7 @@ class GameUserMappingDB(Base):
     game_name = Column(String(8))  # 視你 DB schema 決定長度
     game_elapse = Column(SmallInteger)  
     flag = Column(Boolean, default=False)
+    game_type = Column(String)
 
 # models.py
 class Wager(Base):
