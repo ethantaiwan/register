@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # ======== 加密與JWT設定 ==========
 
 from fastapi.middleware.cors import CORSMiddleware
+import traceback
 
 
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
