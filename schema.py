@@ -8,7 +8,7 @@ class AuthorizeUsersRequest(BaseModel):
     emails: List[EmailStr]
 class UserCreate(BaseModel):
     email: EmailStr
-    password: constr(min_length=8)
+    password: str
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -19,7 +19,7 @@ class AddAccountRequest(BaseModel):
     provider_id: int
 class ResetPasswordRequest(BaseModel):
     email: EmailStr
-    password: constr(min_length=8)  # 可自行調整規則
+    password: str  # 可自行調整規則
 # models.py
 #class UserDB(Base):
 #    __tablename__ = "main_accounts"
