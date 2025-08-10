@@ -119,17 +119,50 @@ def read_root():
 
 @app.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(UserDB).filter(UserDB.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="該E-mail已經註冊")
-    if not is_strong_password(user.password) or len(payload.password) < 8:
+    email = user.email.strip().lower()
+
+    # 1) 密碼強度檢查
+    if not is_strong_password(user.password):
         raise HTTPException(status_code=400, detail="密碼需包含大小寫字母、數字與特殊符號，且長度至少 8 碼")
-    hashed_password = get_password_hash(user.password)
-    new_user = UserDB(email=user.email, pwd=hashed_password, status=0)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"msg": "Registered successfully"}
+
+    # 2) 先檢查是否已註冊（避免回 500）
+    if db.query(UserDB).filter(UserDB.email == email).first():
+        raise HTTPException(status_code=400, detail="該E-mail已經註冊")
+
+    try:
+        hashed_password = get_password_hash(user.password)
+
+        # ⚠️ 這裡請確認欄位名稱和型別：
+        #   若你的模型是 password_hash，就改成 password_hash=hashed_password
+        new_user = UserDB(email=email, pwd=hashed_password, status=0)
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        return {"msg": "Registered successfully"}
+
+    except IntegrityError as e:
+        db.rollback()
+        # 例如同一時間別的請求寫入造成 UNIQUE 衝突
+        logger.exception("IntegrityError on register: %s", e)
+        raise HTTPException(status_code=400, detail="該E-mail已經註冊")
+
+    except TypeError as e:
+        db.rollback()
+        # 常見：傳了模型裡不存在的欄位（例如 pwd 其實叫 password_hash）
+        logger.exception("Model field mismatch: %s", e)
+        raise HTTPException(status_code=500, detail="後端欄位設定有誤（請檢查 UserDB 欄位名稱）")
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.exception("DB error on register: %s", e)
+        raise HTTPException(status_code=500, detail="資料庫錯誤，請稍後再試")
+
+    except Exception as e:
+        db.rollback()
+        logger.exception("Unknown error on register: %s", e)
+        raise HTTPException(status_code=500, detail="系統錯誤，請稍後再試")
 @app.post("/reset-password")
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
     # 1) 找使用者
