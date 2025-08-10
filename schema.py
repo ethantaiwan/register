@@ -1,7 +1,7 @@
 # schemas.py
 from pydantic import BaseModel, EmailStr
 from models import Base
-from typing import List
+from typing import List,constr
 from datetime import datetime
 
 class AuthorizeUsersRequest(BaseModel):
