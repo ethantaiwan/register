@@ -130,6 +130,8 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=500, detail="系統錯誤，請稍後再試")
+    return {"msg": "f"{db_user.email.split('@')[0]}: 密碼修改成功"}
+
 #@app.post("/login", response_model=Token)
 @app.post("/login")
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
