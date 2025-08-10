@@ -17,6 +17,9 @@ class AddAccountRequest(BaseModel):
     username: str
     password: str
     provider_id: int
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    password: constr(min_length=16)  # 可自行調整規則
 # models.py
 #class UserDB(Base):
 #    __tablename__ = "main_accounts"
