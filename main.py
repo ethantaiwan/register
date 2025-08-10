@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.middleware.cors import CORSMiddleware
 import traceback
+import re
 
 
 #SECRET_KEY = "6fbb6277a271e0f2a5b932d68376bbb0af3590da77f1a81b9fa9fcb64edf41fb"
@@ -49,6 +50,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+def is_strong_password(password: str) -> bool:
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"\d", password):
+        return False
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False
+    return True
+
+
 
 # 建立 DB session
 def get_db():
@@ -106,7 +122,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="該E-mail已經註冊")
-
+    if not is_strong_password(user.password):
+        raise HTTPException(status_code=400, detail="密碼需包含大小寫字母、數字與特殊符號，且長度至少 8 碼")
     hashed_password = get_password_hash(user.password)
     new_user = UserDB(email=user.email, pwd=hashed_password, status=0)
     db.add(new_user)
@@ -119,6 +136,8 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     db_user = db.query(UserDB).filter(UserDB.email == payload.email).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="帳號不存在")
+    if not is_strong_password(payload.password):
+        raise HTTPException(status_code=400, detail="密碼需包含大小寫字母、數字與特殊符號，且長度至少 8 碼")
 
     # 2) 產生雜湊並更新
     try:
