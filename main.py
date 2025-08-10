@@ -105,7 +105,7 @@ def read_root():
 def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="該E-mail已經註冊")
 
     hashed_password = get_password_hash(user.password)
     new_user = UserDB(email=user.email, pwd=hashed_password, status=0)
@@ -113,6 +113,23 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return {"msg": "Registered successfully"}
+@app.post("/reset-password")
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    # 1) 找使用者
+    db_user = db.query(UserDB).filter(UserDB.email == payload.email).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="帳號不存在")
+
+    # 2) 產生雜湊並更新
+    try:
+        hashed = get_password_hash(payload.password)
+        db_user.pwd = hashed  # ← 依你的欄位名稱調整：pwd / password_hash
+        db.commit()
+        # 不一定需要 refresh，除非你需要回傳更新後的欄位
+        # db.refresh(db_user)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="系統錯誤，請稍後再試")
 #@app.post("/login", response_model=Token)
 @app.post("/login")
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
