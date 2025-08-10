@@ -122,7 +122,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="該E-mail已經註冊")
-    if not is_strong_password(user.password):
+    if not is_strong_password(payload.password) or len(payload.password) < 8:
         raise HTTPException(status_code=400, detail="密碼需包含大小寫字母、數字與特殊符號，且長度至少 8 碼")
     hashed_password = get_password_hash(user.password)
     new_user = UserDB(email=user.email, pwd=hashed_password, status=0)
@@ -136,7 +136,7 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     db_user = db.query(UserDB).filter(UserDB.email == payload.email).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="帳號不存在")
-    if not is_strong_password(payload.password):
+    if not is_strong_password(payload.password) or len(payload.password) < 8:
         raise HTTPException(status_code=400, detail="密碼需包含大小寫字母、數字與特殊符號，且長度至少 8 碼")
 
     # 2) 產生雜湊並更新
