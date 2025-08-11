@@ -37,8 +37,6 @@ if not keys:
     raise RuntimeError("key is not set in environment variables")
 fernet = Fernet(keys)
 #SECRET_KEY =os.env['token']
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
@@ -51,6 +49,13 @@ app.add_middleware(
 )
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
+ALGORITHM = "HS256"
+
+cred_exc = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="未授權",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 def is_strong_password(password: str) -> bool:
     if len(password) < 8:
         return False
@@ -415,6 +420,27 @@ def get_password(provider_id: int, username: str, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="帳號不存在")
 
     return {"password": results.pwd}
+
+
+@app.get("/me")
+def read_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # 1) 解析 JWT 取 email（假設你把 email 放在 sub）
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str | None = payload.get("sub")
+        if not email:
+            raise cred_exc
+    except JWTError:
+        raise cred_exc
+
+    # 2)（可選）確認帳號存在
+    user = db.query(UserDB).filter(UserDB.email == email).first()
+    if not user:
+        raise cred_exc
+
+    # 3) 回傳顯示用名稱（@ 前面）
+    display = email.split("@")[0] if "@" in email else email
+    return {"username": email, "display_name": display}
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
     return {"msg": "You're authenticated!"}
