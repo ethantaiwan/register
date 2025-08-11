@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, APIRouter, Query
+from fastapi import FastAPI, HTTPException, Depends, APIRouter, Query, status
 from fastapi.security import OAuth2PasswordBearer
 
 from pydantic import BaseModel, EmailStr
@@ -52,7 +52,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 ALGORITHM = "HS256"
 
 cred_exc = HTTPException(
-    status_code=status.HTTP_401_UNAUTHORIZED,
+    status_code=status.HTTP_401_UNAUTHORIZED,  # ← 這裡就不會 NameError 了
     detail="未授權",
     headers={"WWW-Authenticate": "Bearer"},
 )
