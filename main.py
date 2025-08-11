@@ -439,7 +439,8 @@ def read_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
         raise cred_exc
 
     # 3) 回傳顯示用名稱（@ 前面）
-    display = email.split("@")[0] if "@" in email else email
+    local = email.split("@")[0] if "@" in email else email
+    display = local.upper()  
     return {"username": email, "display_name": display}
 @app.get("/protected")
 def protected_route(token: str = Depends(oauth2_scheme)):
